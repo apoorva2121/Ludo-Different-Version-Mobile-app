@@ -13,3 +13,9 @@ build/
 .android-sdk/
 .android-cmdline-tools.zip
 local.properties
+
+# Release signing. Never commit keystores, passwords or key aliases.
+*.jks
+*.keystore
+keystore.properties
+android/keystore.properties

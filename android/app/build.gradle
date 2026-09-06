@@ -2,6 +2,22 @@ plugins {
     id 'com.android.application'
 }
 
+// Release signing is owner-controlled and optional. Credentials live in
+// android/keystore.properties, which is git-ignored and never committed. Without
+// that file the release build still assembles, just unsigned, so anyone can build
+// the project without holding the key.
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+def hasReleaseSigning = keystorePropertiesFile.exists()
+if (hasReleaseSigning) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+    def missing = ['storeFile', 'storePassword', 'keyAlias', 'keyPassword'].findAll { !keystoreProperties.getProperty(it) }
+    if (missing) throw new GradleException("keystore.properties is missing: ${missing.join(', ')}")
+    if (!rootProject.file(keystoreProperties.getProperty('storeFile')).exists()) {
+        throw new GradleException("Keystore not found at ${keystoreProperties.getProperty('storeFile')}")
+    }
+}
+
 android {
     namespace 'com.houseofkiran'
     compileSdk 36
@@ -22,6 +38,17 @@ android {
         buildConfig true
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            release {
+                storeFile rootProject.file(keystoreProperties.getProperty('storeFile'))
+                storePassword keystoreProperties.getProperty('storePassword')
+                keyAlias keystoreProperties.getProperty('keyAlias')
+                keyPassword keystoreProperties.getProperty('keyPassword')
+            }
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
@@ -30,6 +57,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) signingConfig signingConfigs.release
         }
     }
 }
