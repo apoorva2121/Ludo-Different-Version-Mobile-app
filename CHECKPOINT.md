@@ -68,7 +68,15 @@ The initial connected Gradle test failed while the phone was locked. Later direc
    silently kept building with the old Gradle. Verified: clean build of all four tasks, lint 0
    errors and the same 5 warnings as before, `targetSdk=36` confirmed on device, instrumentation
    unchanged, edge-to-edge and Back behaviour re-checked on the OnePlus.
-2. Set up owner-controlled release/upload signing and produce the signed `.aab`; no production key has been generated.
+2. ~~Set up owner-controlled release/upload signing and produce the signed `.aab`.~~ **Done
+   2026-09-06.** The owner generated the upload keystore themselves with `keytool`; it lives outside
+   the repository and no key material is committed. `signingConfigs.release` reads
+   `android/keystore.properties` (git-ignored) and is declared only when that file exists, so the
+   project still builds for anyone without the key. Verified: `apksigner` reports the APK verified
+   under the v2 scheme with an RSA 2048 key, `jarsigner` reports the `.aab` as "jar verified", and
+   the signed release build was installed and played on the OnePlus.
+   Artefacts: `dist/release/House-of-Kiran-v0.2.0.aab` (403.3 KB) and the matching release APK
+   (397.6 KB). These are build outputs and are not committed.
 3. Choose/deploy a public HTTPS/WSS backend if online multiplayer is to ship. Default backend remains blank; local USB connectivity is not public deployment.
 4. Add/review privacy policy, Data Safety disclosures, account-deletion flows (in-app and web), content rating, store listing/artwork, and applicable Play Console testing requirements. Account creation is implemented; account deletion is not. References: https://support.google.com/googleplay/android-developer/answer/13327111?hl=en and https://support.google.com/googleplay/android-developer/answer/10787469?hl=en
 5. Broader device, orientation, accessibility, native Back, real network interruption and long-session testing. The actual-device tests are focused smoke/regression checks, not proof every feature/device works.

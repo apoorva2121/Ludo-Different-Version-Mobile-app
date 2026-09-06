@@ -42,9 +42,35 @@ Check that the build finishes successfully before using this file; an older copy
 | Build | Output, relative to repository root | Intended use |
 | --- | --- | --- |
 | `build-android.cmd` | `dist\House-of-Kiran-test.apk` | Installable APK signed with a development key; application ID `com.houseofkiran.debug`. |
-| `build-android.cmd -Release` | `android\app\build\outputs\apk\release\app-release-unsigned.apk` | Unsigned, minified release output; application ID `com.houseofkiran`. Requires release signing before installation or distribution. |
+| `build-android.cmd -Release` | `android\app\build\outputs\apk\release\app-release.apk` | Minified release APK, signed when `keystore.properties` is present; application ID `com.houseofkiran`. Without that file the output is `app-release-unsigned.apk` instead. |
 
-The release command does not update the debug test APK in `dist`. Release signing, distribution preparation, and final device verification are still required. A successful build or JavaScript test run is not a phone test result.
+The release command does not update the debug test APK in `dist`. A successful build or JavaScript test run is not a phone test result.
+
+## Release signing
+
+Signing is owner-controlled. No key material is in this repository, and `.gitignore` excludes `*.jks`, `*.keystore` and `keystore.properties`.
+
+1. Create an upload keystore. From CMD:
+
+```bat
+set "JAVA_BIN=C:\Program Files\Microsoft\jdk-17.0.20.101-hotspot\bin"
+"%JAVA_BIN%\keytool.exe" -genkeypair -v -keystore "<path outside this repository>\house-of-kiran-upload.jks" -alias upload -keyalg RSA -keysize 2048 -validity 10000
+```
+
+2. Copy `keystore.properties.example` to `android\keystore.properties` and fill in the real values. Use forward slashes in `storeFile`: this is a Java properties file, where a backslash is an escape character.
+
+3. Build the signed artefacts:
+
+```bat
+cd /d <repository root>\android
+gradlew.bat assembleRelease bundleRelease
+```
+
+`bundleRelease` produces `app\build\outputs\bundle\release\app-release.aab`, which is what Google Play accepts.
+
+When `keystore.properties` is absent the release build still assembles, unsigned, so the project builds for anyone without the key. When the file is present but incomplete, or points at a missing keystore, the build fails with an explicit message rather than silently producing an unsigned artefact.
+
+Keep the keystore backed up somewhere durable and the passwords in a password manager. With Play App Signing an upload key can be reset by Google, but that is far slower than restoring a backup.
 
 ## Test online rooms against a Windows PC
 
@@ -93,15 +119,19 @@ An earlier Gradle connected-test HTML report still records a failure from a run 
 
 **OnePlus CPH2467, Android 15, debug build at targetSdk 36 — 2026-09-06.** After the SDK 36 upgrade, re-verified on device: `dumpsys` confirms `targetSdk=36`; instrumentation unchanged (offline passed, online self-skipped); the home screen renders identically to the SDK 35 build at the same scroll position, so edge-to-edge insets are unaffected; and Back from inside a game is still intercepted by `HOKApp.handleBack()`, which shows the "Back to home?" confirmation rather than exiting. Back from the home screen exits the app, which is the intended behaviour.
 
+**Signed release build, OnePlus CPH2467, Android 15 — 2026-09-06.** The R8-minified, signed release APK (`com.houseofkiran`, targetSdk 36) was installed and run for the first time. Home screen, banner, bundled font and CSS all load, confirming `WebViewAssetLoader` and the asset pipeline survive minification and resource shrinking. A four-player Watch AI game ran through dice rolls, piece movement, captures, bonus rolls and turn rotation with no crashes and no app entries in `logcat -b crash`. Signature verified with `apksigner` (v2 scheme, RSA 2048) and the `.aab` with `jarsigner` ("jar verified").
+
 ### Still to verify
 
 1. Any device other than the two above, and any tablet or foldable form factor.
 2. Orientation changes. The activity declares `configChanges` for orientation but rotation has not been exercised.
 3. Accessibility: TalkBack, large font scales, and high-contrast modes.
-4. Native Android Back behaviour across every screen, including predictive back.
+4. Pass & Play and the tutorial as explicit device runs. Play AI and Watch AI have been exercised.
 5. Real network interruption and reconnection against a reachable backend, and long-session stability.
-6. **The release variant.** Every device test so far used the debug build. Release sets `minifyEnabled true` and `shrinkResources true`, so R8-only breakage would not have been caught. Release cannot be installed until signing is configured.
-7. Online play against a public HTTPS/WSS backend, which does not exist yet.
+6. Online play against a public HTTPS/WSS backend, which does not exist yet.
+7. The Samsung A35 has not been re-tested since the SDK 36 upgrade.
+
+Note on the roll-chip contrast fix: it was confirmed visually on the debug build. The release APK carries a byte-identical `app.css` — R8 minifies code, not assets — so the same rule applies there, but the white active chip was not separately photographed in the release variant.
 
 ## Packaging and security notes
 
