@@ -9,7 +9,8 @@ There is no public online backend deployed yet. `SERVER_BASE_URL` defaults to an
 All commands below are for Command Prompt (CMD), starting in the repository root. Requirements:
 
 - JDK 17. Set `JAVA_HOME` if needed; the helper can discover Microsoft JDK 17 under `C:\Program Files\Microsoft\jdk-17*`.
-- Android SDK with platform `android-35` and the required build tools. Set `ANDROID_HOME` to the SDK directory, or use the repository's `.android-sdk` directory, which the helper selects by default.
+- Android SDK with platform `android-36` and build-tools `36.0.0`. Set `ANDROID_HOME` to the SDK directory, or use the repository's `.android-sdk` directory, which the helper selects by default.
+- The build uses Android Gradle Plugin 8.13.2 and Gradle 8.14.5. `gradle-wrapper.properties` is the single source of truth for the Gradle version; `scripts\build-android.ps1` always invokes `gradlew.bat` so the two cannot drift apart.
 - Network access for any build dependencies that have not been cached. Offline gameplay does not imply that the first build can run offline.
 
 If automatic discovery does not match your installation, set the actual paths in CMD before building. These are illustrative paths to replace with your installed locations:
@@ -89,6 +90,8 @@ The debug lobby accepts HTTP only for loopback and private IPv4 servers, as well
 **OnePlus CPH2467, Android 15 (SDK 35), 1080x2400, debug build — 2026-09-06.** Installed and launched from `dist\House-of-Kiran-test.apk`. Home screen, language selector, banner and bundled Outfit font render correctly; Play AI setup, board rendering, dice rolling, AI turns and the roll-strip chips were exercised by hand. Instrumentation on this device: `offlineDiceMovesResumeAndOnlineSwitch` **passed**; `onlineAccountRoomAndRollOverUsb` **self-skipped** through `AssumptionViolatedException` because no server was configured. Note that JUnit still prints `OK (2 tests)` for that combination — a skip is not a pass, so check the per-test status codes (`0` passed, `-4` skipped) rather than the summary line.
 
 An earlier Gradle connected-test HTML report still records a failure from a run made while the phone was locked. That report is kept deliberately; the later direct-ADB runs on an unlocked phone are the current result.
+
+**OnePlus CPH2467, Android 15, debug build at targetSdk 36 — 2026-09-06.** After the SDK 36 upgrade, re-verified on device: `dumpsys` confirms `targetSdk=36`; instrumentation unchanged (offline passed, online self-skipped); the home screen renders identically to the SDK 35 build at the same scroll position, so edge-to-edge insets are unaffected; and Back from inside a game is still intercepted by `HOKApp.handleBack()`, which shows the "Back to home?" confirmation rather than exiting. Back from the home screen exits the app, which is the intended behaviour.
 
 ### Still to verify
 

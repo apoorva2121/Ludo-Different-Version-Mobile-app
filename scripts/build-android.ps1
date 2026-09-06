@@ -22,9 +22,10 @@ $task = if ($Release) { 'assembleRelease' } else { 'assembleDebug' }
 Push-Location (Join-Path $repoRoot 'android')
 try {
     $projectCache = Join-Path $env:TEMP 'house-of-kiran-project-cache'
-    $cachedGradle = Join-Path $env:GRADLE_USER_HOME 'gradle-8.7\bin\gradle.bat'
-    $gradleCommand = if (Test-Path -LiteralPath $cachedGradle) { $cachedGradle } else { '.\gradlew.bat' }
-    & $gradleCommand $task --no-daemon --project-cache-dir $projectCache "-PserverBaseUrl=$ServerUrl"
+    # Always use the wrapper so gradle-wrapper.properties stays the single source of
+    # truth for the Gradle version. GRADLE_USER_HOME and the project cache both live
+    # outside OneDrive, which is what avoids the cache snapshot errors.
+    & '.\gradlew.bat' $task --no-daemon --project-cache-dir $projectCache "-PserverBaseUrl=$ServerUrl"
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     $variant = if ($Release) { 'release' } else { 'debug' }
     $apk = Get-ChildItem -File "app\build\outputs\apk\$variant\*.apk" | Select-Object -First 1

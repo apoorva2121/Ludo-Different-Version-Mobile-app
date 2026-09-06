@@ -61,7 +61,13 @@ The initial connected Gradle test failed while the phone was locked. Later direc
 
 ## Remaining — not Google Play ready
 
-1. Upgrade compile/target SDK from 35 to 36 with compatible build tooling and rerun device/release checks. Google currently requires API 36 for new phone-app submissions: https://support.google.com/googleplay/android-developer/answer/11926878?hl=en
+1. ~~Upgrade compile/target SDK from 35 to 36 with compatible build tooling.~~ **Done 2026-09-06.**
+   compileSdk and targetSdk are now 36, with AGP 8.13.2 and Gradle 8.14.5. Deliberately stayed on
+   the AGP 8.x line; 9.x is available but is a major version with breaking changes that were not
+   needed here. Also fixed `scripts\build-android.ps1`, which hardcoded `gradle-8.7` and would have
+   silently kept building with the old Gradle. Verified: clean build of all four tasks, lint 0
+   errors and the same 5 warnings as before, `targetSdk=36` confirmed on device, instrumentation
+   unchanged, edge-to-edge and Back behaviour re-checked on the OnePlus.
 2. Set up owner-controlled release/upload signing and produce the signed `.aab`; no production key has been generated.
 3. Choose/deploy a public HTTPS/WSS backend if online multiplayer is to ship. Default backend remains blank; local USB connectivity is not public deployment.
 4. Add/review privacy policy, Data Safety disclosures, account-deletion flows (in-app and web), content rating, store listing/artwork, and applicable Play Console testing requirements. Account creation is implemented; account deletion is not. References: https://support.google.com/googleplay/android-developer/answer/13327111?hl=en and https://support.google.com/googleplay/android-developer/answer/10787469?hl=en

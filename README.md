@@ -45,7 +45,7 @@ Close the lobby or choose **Play offline instead** to return to local play. See 
 
 ## Build the Android test APK from CMD
 
-Requires JDK 17 and an Android SDK with platform 35 and the project's required build tools. The build helper uses `ANDROID_HOME`, falling back to this repository's `.android-sdk`, and can discover a Microsoft JDK 17 installation. See [Android setup](android/README.md) for environment settings.
+Requires JDK 17 and an Android SDK with platform 36 and the project's required build tools. The build helper uses `ANDROID_HOME`, falling back to this repository's `.android-sdk`, and can discover a Microsoft JDK 17 installation. See [Android setup](android/README.md) for environment settings.
 
 ```bat
 cd /d C:\Users\apoor\OneDrive\Documents\Ludo
