@@ -1,0 +1,15 @@
+node_modules/
+data/
+.env
+.env.*
+!.env.example
+*.log
+coverage/
+dist/
+build/
+.gradle/
+.gradle-dist/
+.gradle-user-home/
+.android-sdk/
+.android-cmdline-tools.zip
+local.properties

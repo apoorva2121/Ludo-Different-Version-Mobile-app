@@ -1,0 +1,56 @@
+{
+  "skill_name": "ludo_world_class_ui_engine",
+  "version": "1.0.0",
+  "description": "Design system, interaction model, and UI layout instructions for building a world-class Ludo game interface.",
+  "rules": {
+    "visual_theme": {
+      "style": "Neumorphic-Glassmorphism Hybrid with 3D Depth",
+      "color_palette": {
+        "board_background": "#0F172A",
+        "grid_border": "#1E293B",
+        "red_player": {"main": "#EF4444", "accent": "#B91C1C", "glow": "#FCA5A5"},
+        "green_player": {"main": "#10B981", "accent": "#047857", "glow": "#6EE7B7"},
+        "yellow_player": {"main": "#F59E0B", "accent": "#B45309", "glow": "#FDE68A"},
+        "blue_player": {"main": "#3B82F6", "accent": "#1D4ED8", "glow": "#93C5FD"}
+      },
+      "typography": {
+        "font_family": "Outfit, Inter, sans-serif",
+        "score_numbers": "Monospace / Tabular numbers for non-jittering animations"
+      }
+    },
+    "board_geometry_and_layout": {
+      "aspect_ratio": "1:1 (Square board with responsive safety padding)",
+      "home_bases": "Rounded-corner squares with subtle drop shadows and inner glow when active.",
+      "path_cells": "Elevated tile appearance with soft inner inset shadows.",
+      "safe_zones": "Distinct star icons with shimmering shader effects."
+    },
+    "token_design_and_states": {
+      "token_style": "Glossy 3D-effect tokens with drop shadow casting onto the board path.",
+      "states": {
+        "idle": "Standard token opacity and resting elevation.",
+        "selectable": "Continuous subtle pulsing scale (1.0 to 1.15) with an outer radial glow ring.",
+        "moving": "Parabolic arc jump animation along the path path with micro-squash on landing.",
+        "stacked": "Subtle offset stacking with dynamic count badge on top."
+      }
+    },
+    "dice_mechanics_and_hud": {
+      "dice_view": "Interactive 3D rotating cube with realistic physics momentum.",
+      "hud_layout": {
+        "player_cards": "Four corner cards showing avatar, timer ring, current status, and captured token count.",
+        "active_turn_indicator": "Smooth gradient border pulsing around the current player's avatar card.",
+        "turn_timer": "Circular shrinking progress ring around the active player's profile."
+      }
+    },
+    "juice_and_microinteractions": {
+      "dice_roll": "Haptic feedback, sound effect, and screen shake on rolling a 6.",
+      "token_capture": "Impact ripple effect across the tile, particle explosion in player's color, and token fast-rewind animation.",
+      "home_entry": "Confetti bursts, victory chime, and glowing path highlight."
+    }
+  },
+  "implementation_guidelines": [
+    "1. Never let tokens overlap completely; use dynamic grid offsets when multiple tokens land on a single tile.",
+    "2. Ensure all turn transitions happen under 300ms to maintain fast-paced gameplay.",
+    "3. Keep UI elements outside the board (HUD, chat, settings) translucent so the board remains the focal point.",
+    "4. Support 60fps/120fps animations for all token movement paths."
+  ]
+}
