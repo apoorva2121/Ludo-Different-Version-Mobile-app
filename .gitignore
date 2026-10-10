@@ -50,3 +50,10 @@ android/build/
 android/app/build/
 *.sqlite
 *.db
+
+# The upload signing key and anything stored beside it. The .jks itself is
+# already covered, but the whole folder is excluded so that a keystore.properties
+# holding the store/key passwords can never be added here by accident. Losing
+# this key means never being able to update the app on Play; leaking it means
+# someone else can sign updates as you. Back it up outside git.
+HouseOfKiran-signing/
