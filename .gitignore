@@ -19,3 +19,34 @@ local.properties
 *.keystore
 keystore.properties
 android/keystore.properties
+
+# ---- added for publication (2026-10-10) ----
+# --- credentials: never commit these ---
+*.pem
+*.key
+*.p12
+secrets.txt
+env.txt
+*.env.txt
+service-account*.json
+credentials.json
+# --- os / editor noise ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+# --- node ---
+npm-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+.cache/
+# --- android sdk and build output (huge, machine-specific) ---
+*.apk
+*.aab
+android/.gradle/
+android/build/
+android/app/build/
+*.sqlite
+*.db

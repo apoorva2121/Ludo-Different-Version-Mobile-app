@@ -1,89 +1,140 @@
 # House of Kiran
 
-House of Kiran is a browser game with an Android WebView app that bundles the game, images, and fonts. The home screen offers:
+A Ludo board game that runs in the browser and as an Android app. Offline first:
+the game, images and fonts are all bundled into the Android WebView wrapper, so
+nothing needs a network.
 
-- **Play AI**: play against computer opponents.
-- **Pass & Play**: share one device with other players.
-- **Watch AI**: watch computer players play.
-- **Play Online**: open the account and room lobby for a configured game server.
+Four ways to play, from the home screen:
 
-The first three modes and the tutorial need no login or internet connection in the Android app. Play AI and Pass & Play can save an offline game for **Continue last offline game**.
+- **Play AI** — against computer opponents.
+- **Pass & Play** — share one device.
+- **Watch AI** — let the computer play itself.
+- **Play Online** — accounts and room lobby, against a game server you run.
 
-There is no public online backend deployed yet. The default Android server address is empty; online rooms require a running, reachable backend.
+The first three modes and the tutorial need no login and no internet. Play AI
+and Pass & Play save a game you can resume with **Continue last offline game**.
+Banners are available in English, Hindi and Telugu.
 
-The app has been installed and exercised on real phones: a Samsung Galaxy A35 (Android 16) and a OnePlus CPH2467 (Android 15). Offline play, resume, and AI turns work on both. See [Android setup](android/README.md#device-verification) for exactly what was and was not verified.
+> **There is no public online backend.** The default Android server address is
+> empty, and online rooms need a running, reachable server of your own. Forks
+> are welcome to point it at theirs.
 
-## Run locally from Windows CMD
+**Verified on real hardware:** Samsung Galaxy A35 (Android 16) and OnePlus
+CPH2467 (Android 15). Offline play, resume and AI turns work on both. See
+[Android setup](android/README.md#device-verification) for exactly what was and
+was not tested.
 
-Use Command Prompt (CMD) for these commands. Requires Node.js 22.5+ with built-in SQLite support enabled and npm available on `PATH`.
+---
 
-```bat
-cd /d C:\Users\apoor\OneDrive\Documents\Ludo
+## Play it in a browser
+
+Requires **Node.js 22.5+** (the built-in SQLite support is used) and npm.
+
+```bash
+git clone https://github.com/apoorva2121/house-of-kiran.git
+cd house-of-kiran
 npm install
-start-local.cmd
+npm run dev
 ```
 
-Open `http://localhost:8080` in your browser. Keep the CMD window open while playing; press Ctrl+C to stop the server. The launcher binds to `127.0.0.1` by default, creates a local signing secret at `data\local-signing-secret`, and uses `data\house-of-kiran.sqlite` for account and game persistence. Keep the signing secret private. No manual secret or development-auth setup is needed for normal account registration and login.
+Then open <http://localhost:8080>. Press Ctrl+C to stop.
 
-If port 8080 is occupied, use a different port in the same CMD window before starting:
+The launcher binds to `127.0.0.1`, creates a local signing secret at
+`data/local-signing-secret`, and keeps accounts and games in
+`data/house-of-kiran.sqlite`. **Keep that signing secret private** — it is
+git-ignored. No manual secret or dev-auth setup is needed for normal
+registration and login.
 
-```bat
-set "PORT=8081"
-start-local.cmd
+To use a different port:
+
+```bash
+PORT=8081 npm run dev          # Windows CMD:  set "PORT=8081" && npm run dev
 ```
 
-Then open `http://localhost:8081`. `npm run dev` is an alternative to `start-local.cmd`; `npm start` directly starts the service and does not perform the launcher's local configuration.
+On Windows you can also double-click `start-local.cmd`, which does the same
+thing. `npm start` launches the service directly and skips the launcher's local
+configuration, so prefer `npm run dev` for development.
 
-## Online login and rooms
+## Online accounts and rooms
 
-1. Start the local server and choose **Play Online**. A browser opened at localhost uses that server automatically. In Android, enter a reachable server origin under **Connection settings > Server address**, or supply it when building.
-2. For a new account, enter a username of 3-40 characters (letters, numbers, `_`, `.`, or `-`, starting with a letter or number) and a password of at least 12 characters, then choose **Create account**.
-3. For an existing account, enter its credentials and choose **Create room** or **Join room**; those actions sign you in automatically.
-4. Create a room for 2-4 players and share its room code. Other players use their own accounts on the same server and choose **Join room**. Play begins when all selected seats are filled. Teams require four players.
+1. Start the server and choose **Play Online**. A browser at localhost uses that
+   server automatically. On Android, set **Connection settings → Server
+   address**, or supply it at build time.
+2. **New account:** username 3–40 characters (letters, numbers, `_`, `.`, `-`,
+   starting with a letter or number) and a password of at least 12 characters,
+   then **Create account**.
+3. **Existing account:** enter credentials and choose **Create room** or **Join
+   room** — either signs you in.
+4. Create a room for 2–4 players and share the room code. Play begins when every
+   selected seat is filled. Teams need four players.
 
-Close the lobby or choose **Play offline instead** to return to local play. See [Android setup](android/README.md) for phone-to-PC LAN testing and HTTPS requirements.
+Close the lobby or choose **Play offline instead** to go back to local play.
+[Android setup](android/README.md) covers phone-to-PC LAN testing and the HTTPS
+requirements.
 
-## Build the Android test APK from CMD
+## Build the Android app
 
-Requires JDK 17 and an Android SDK with platform 36 and the project's required build tools. The build helper uses `ANDROID_HOME`, falling back to this repository's `.android-sdk`, and can discover a Microsoft JDK 17 installation. See [Android setup](android/README.md) for environment settings.
+Requires **JDK 17** and an Android SDK with platform 36. The build helper reads
+`ANDROID_HOME`, falling back to a `.android-sdk` directory in the repository
+(not committed — it is a large local SDK copy).
 
-```bat
-cd /d C:\Users\apoor\OneDrive\Documents\Ludo
+```bash
+# Windows
 build-android.cmd
+
+# macOS / Linux
+cd android && ./gradlew assembleDebug
 ```
 
-The CMD wrapper invokes the checked-in build helper. On success, the expected installable debug APK is:
+On success the installable debug APK is at `dist/House-of-Kiran-test.apk`
+(Windows helper) or `android/app/build/outputs/apk/debug/`.
 
-```text
-C:\Users\apoor\OneDrive\Documents\Ludo\dist\House-of-Kiran-test.apk
-```
+Copy it to an Android 8.0+ phone and open it to install, allowing installation
+from that source if prompted. It is signed with a **development key** and is for
+testing only.
 
-Copy that file to an Android 8.0+ phone and open it to install, allowing installation from that source if prompted. This package is signed with a development key and is intended for testing. Installation, startup and offline gameplay have been confirmed on the two phones listed above; other devices, orientations and the release variant are still unverified.
-
-```bat
+```bash
 build-android.cmd -Release
 ```
 
-The release command produces an unsigned release APK under `android\app\build\outputs\apk\release\`; it does not replace `dist\House-of-Kiran-test.apk`. No release signing configuration is present, so the release output must be signed before it can be installed or distributed. Public online deployment and release verification are also pending.
+The release command produces an **unsigned** release APK under
+`android/app/build/outputs/apk/release/` and does not replace the test APK.
+There is no release signing configuration in this repository, so you must sign
+the release output yourself before installing or distributing it.
 
 ## Development checks
 
-Run in a separate CMD window if the server is running:
-
-```bat
-cd /d C:\Users\apoor\OneDrive\Documents\Ludo
-npm run check
-npm test
+```bash
+npm run check      # JavaScript syntax
+npm test           # engine, account, server, client and UI tests
 ```
 
-These check JavaScript syntax and the automated engine, account, server, client, and UI tests. They run in jsdom and do not load `app.css`, so they cannot detect visual or styling regressions; those need a browser or a phone.
+These run in jsdom and **do not load `app.css`**, so they cannot catch visual or
+styling regressions — those need a real browser or a phone.
 
 ## Repository map
 
-- `House_of_Kiran_AI_Stage3_6_PRODUCTION.html`, `app-shell.js`, `app.css`, `online-ui.js`: game UI, offline controls, and online lobby; root assets are copied into Android during a build.
-- `game/`: extracted board rules, state transitions, dice, move validation, and AI selection.
-- `server/`: authenticated HTTP/WebSocket service, accounts, and game persistence.
-- `client/`: authoritative client adapter.
-- `tests/`: automated JavaScript tests.
-- `android/`: native wrapper and Android instrumentation tests; see [Android README](android/README.md).
-- `ARCHITECTURE_AUDIT.md`, `ARCHITECTURE.md`, `SECURITY.md`, `THREAT_MODEL.md`, `API.md`: architecture and security documentation.
+| Path | What |
+|---|---|
+| `House_of_Kiran_AI_Stage3_6_PRODUCTION.html`, `app-shell.js`, `app.css`, `online-ui.js` | Game UI, offline controls, online lobby. Root assets are copied into Android at build time. |
+| `game/` | Board rules, state transitions, dice, move validation, AI move selection |
+| `server/` | Authenticated HTTP/WebSocket service, accounts, game persistence |
+| `client/` | Authoritative client adapter |
+| `tests/` | Automated JavaScript tests |
+| `android/` | Native wrapper and instrumentation tests — [README](android/README.md) |
+| `ARCHITECTURE.md`, `ARCHITECTURE_AUDIT.md`, `SECURITY.md`, `THREAT_MODEL.md`, `API.md` | Architecture and security documentation |
+
+## Status
+
+Paused 2026-09-06, part way through Google Play release preparation. Read
+`PLAY_RELEASE_CHECKLIST.md` first if you are picking it up.
+
+Decisions already taken: version 1 ships offline-only; Bluetooth play deferred.
+Open question: whether to hide the **Play Online** button in release builds,
+given there is no public server. The remaining blocker is external — a Google
+Play developer account, plus Google's requirement of 12 testers for 14 days
+before a personal account may publish.
+
+## Licence
+
+[MIT](LICENSE).
