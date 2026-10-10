@@ -1,4 +1,4 @@
-# House of Kiran
+# Different Version Ludo Game
 
 A Ludo board game that runs in the browser and as an Android app. Offline first:
 the game, images and fonts are all bundled into the Android WebView wrapper, so
