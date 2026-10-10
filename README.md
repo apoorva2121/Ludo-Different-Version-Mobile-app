@@ -31,8 +31,8 @@ was not tested.
 Requires **Node.js 22.5+** (the built-in SQLite support is used) and npm.
 
 ```bash
-git clone https://github.com/apoorva2121/house-of-kiran.git
-cd house-of-kiran
+git clone https://github.com/apoorva2121/Ludo-Different-Version-Mobile-app.git
+cd Ludo-Different-Version-Mobile-app
 npm install
 npm run dev
 ```
